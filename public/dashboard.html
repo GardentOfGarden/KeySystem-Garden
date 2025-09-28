@@ -15,7 +15,7 @@
             </div>
             <div class="nav-links">
                 <span>admin@example.com</span>
-                <a href="#" class="login-btn">Выйти</a>
+                <a href="login.html" class="login-btn">Выйти</a>
             </div>
         </div>
     </nav>
@@ -38,32 +38,32 @@
                 
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <div class="stat-value">1</div>
+                        <div class="stat-value" id="active-keys">0</div>
                         <div class="stat-label">Активные ключи</div>
                         <span class="stat-badge">LIVE</span>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value">57,530</div>
+                        <div class="stat-value" id="total-keys">0</div>
                         <div class="stat-label">Всего ключей</div>
                         <span class="stat-badge">LIVE</span>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value">49,785</div>
+                        <div class="stat-value" id="used-keys">0</div>
                         <div class="stat-label">Использовано ключей</div>
                         <span class="stat-badge">LIVE</span>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value">7,744</div>
+                        <div class="stat-value" id="online-users">0</div>
                         <div class="stat-label">Онлайн пользователей</div>
                         <span class="stat-badge">LIVE</span>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value">86.5%</div>
+                        <div class="stat-value" id="license-usage">0%</div>
                         <div class="stat-label">Использование лицензий</div>
                         <span class="stat-badge">LIVE</span>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value">7,744</div>
+                        <div class="stat-value" id="available-licenses">0</div>
                         <div class="stat-label">Доступные лицензии</div>
                         <span class="stat-badge">LIVE</span>
                     </div>
@@ -110,7 +110,11 @@
                             </tr>
                         </thead>
                         <tbody id="keys-table-body">
-                            <!-- Keys will be populated by JavaScript -->
+                            <tr>
+                                <td colspan="6" style="text-align: center; padding: 2rem; color: var(--gray);">
+                                    Ключей пока нет. Нажмите "Сгенерировать ключ"
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </section>
