@@ -1,6 +1,6 @@
 class EclipseAuth {
     constructor() {
-        this.apiBase = '/api/auth.php';
+        this.apiBase = 'api/auth.php';
         this.init();
     }
 
@@ -11,10 +11,9 @@ class EclipseAuth {
     }
 
     async checkAuth() {
-        // Проверяем авторизацию
         const token = localStorage.getItem('eclipse_token');
         if (!token) {
-            window.location.href = 'index.html';
+            window.location.href = 'login.html';
             return;
         }
     }
@@ -94,16 +93,10 @@ class EclipseAuth {
         const usedKeys = keys.filter(k => k.used).length;
         const activeKeys = keys.filter(k => k.status === 'active').length;
         
-        // Здесь можно обновить DOM элементы со статистикой
         console.log('Stats updated:', { totalKeys, usedKeys, activeKeys });
-        
-        // Пример обновления статистики (раскомментируй когда добавишь элементы в HTML)
-        // document.getElementById('total-keys').textContent = totalKeys;
-        // document.getElementById('used-keys').textContent = usedKeys;
     }
 
     showNotification(message, type = 'info') {
-        // Создаём уведомление
         const notification = document.createElement('div');
         notification.style.cssText = `
             position: fixed;
@@ -121,14 +114,12 @@ class EclipseAuth {
         
         document.body.appendChild(notification);
         
-        // Удаляем через 3 секунды
         setTimeout(() => {
             notification.remove();
         }, 3000);
     }
 }
 
-// Инициализация
 const auth = new EclipseAuth();
 
 function generateKey() {
