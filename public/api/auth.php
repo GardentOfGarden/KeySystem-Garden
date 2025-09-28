@@ -4,62 +4,68 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 
+// Подключаем базу данных
+require_once 'database.php';
+
 class EclipseAuthAPI {
     private $db;
     
     public function __construct() {
-        $this->connectDB();
-    }
-    
-    private function connectDB() {
-        // Для Render.com - используй переменные окружения
-        $host = getenv('DB_HOST') ?: 'localhost';
-        $dbname = getenv('DB_NAME') ?: 'eclipse_auth';
-        $username = getenv('DB_USER') ?: 'username';
-        $password = getenv('DB_PASS') ?: 'password';
-        
-        try {
-            $this->db = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
-            $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch(PDOException $e) {
-            $this->sendError('Database connection failed');
-        }
+        $database = new Database();
+        $this->db = $database->getConnection();
     }
     
     public function handleRequest() {
         $method = $_SERVER['REQUEST_METHOD'];
-        $action = $_GET['action'] ?? '';
+        
+        // Для OPTIONS запроса (CORS)
+        if ($method === 'OPTIONS') {
+            exit(0);
+        }
+        
+        $input = json_decode(file_get_contents('php://input'), true);
+        $action = $_GET['action'] ?? $input['action'] ?? '';
         
         switch($action) {
             case 'login':
-                $this->login();
+                $this->login($input);
                 break;
             case 'validate_key':
-                $this->validateKey();
+                $this->validateKey($input);
                 break;
             case 'generate_key':
                 $this->generateKey();
+                break;
+            case 'get_keys':
+                $this->getKeys();
+                break;
+            case 'delete_key':
+                $this->deleteKey($input);
                 break;
             default:
                 $this->sendError('Invalid action');
         }
     }
     
-    private function login() {
-        $data = json_decode(file_get_contents('php://input'), true);
+    private function login($data) {
         $username = $data['username'] ?? '';
         $password = $data['password'] ?? '';
         
-        // Простая проверка (замени на реальную логику)
-        if ($username === 'admin' && $password === 'admin') {
-            $this->sendSuccess(['token' => bin2hex(random_bytes(32))]);
+        $stmt = $this->db->prepare("SELECT * FROM users WHERE username = ?");
+        $stmt->execute([$username]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($user && password_verify($password, $user['password_hash'])) {
+            $this->sendSuccess([
+                'token' => bin2hex(random_bytes(32)),
+                'user' => ['username' => $user['username'], 'email' => $user['email']]
+            ]);
         } else {
             $this->sendError('Invalid credentials');
         }
     }
     
-    private function validateKey() {
-        $data = json_decode(file_get_contents('php://input'), true);
+    private function validateKey($data) {
         $key = $data['key'] ?? '';
         $hwid = $data['hwid'] ?? '';
         
@@ -68,6 +74,12 @@ class EclipseAuthAPI {
         $license = $stmt->fetch(PDO::FETCH_ASSOC);
         
         if ($license) {
+            // Проверяем срок действия
+            if ($license['expires_at'] && strtotime($license['expires_at']) < time()) {
+                $this->sendError('License expired');
+                return;
+            }
+            
             if (empty($license['hwid'])) {
                 // Первое использование - привязываем HWID
                 $stmt = $this->db->prepare("UPDATE license_keys SET hwid = ?, used = 1 WHERE license_key = ?");
@@ -76,7 +88,7 @@ class EclipseAuthAPI {
             } else if ($license['hwid'] === $hwid) {
                 $this->sendSuccess(['valid' => true, 'message' => 'License valid']);
             } else {
-                $this->sendError('HWID mismatch');
+                $this->sendError('HWID mismatch - this license is already used on another device');
             }
         } else {
             $this->sendError('Invalid license key');
@@ -90,7 +102,27 @@ class EclipseAuthAPI {
         $stmt = $this->db->prepare("INSERT INTO license_keys (license_key, status, expires_at) VALUES (?, 'active', ?)");
         $stmt->execute([strtoupper($key), $expires]);
         
-        $this->sendSuccess(['key' => strtoupper($key), 'expires' => $expires]);
+        $this->sendSuccess([
+            'key' => strtoupper($key), 
+            'expires' => $expires,
+            'message' => 'Key generated successfully'
+        ]);
+    }
+    
+    private function getKeys() {
+        $stmt = $this->db->query("SELECT * FROM license_keys ORDER BY created_at DESC");
+        $keys = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        $this->sendSuccess(['keys' => $keys]);
+    }
+    
+    private function deleteKey($data) {
+        $keyId = $data['key_id'] ?? '';
+        
+        $stmt = $this->db->prepare("DELETE FROM license_keys WHERE id = ?");
+        $stmt->execute([$keyId]);
+        
+        $this->sendSuccess(['message' => 'Key deleted successfully']);
     }
     
     private function sendSuccess($data) {
@@ -104,6 +136,7 @@ class EclipseAuthAPI {
     }
 }
 
+// Обработка запроса
 $api = new EclipseAuthAPI();
 $api->handleRequest();
 ?>
