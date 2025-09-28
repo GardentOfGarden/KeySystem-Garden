@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель управления - Eclipse</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <span class="logo-icon">🌙</span>
+                <span class="logo-text">Eclipse</span>
+            </div>
+            <div class="nav-links">
+                <span>admin@example.com</span>
+                <a href="#" class="login-btn">Выйти</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="dashboard">
+        <div class="dashboard-container">
+            <aside class="sidebar">
+                <nav class="sidebar-nav">
+                    <a href="#" class="sidebar-link active">📊 Дашборд</a>
+                    <a href="#" class="sidebar-link">🔑 Ключи доступа</a>
+                    <a href="#" class="sidebar-link">👥 Пользователи</a>
+                    <a href="#" class="sidebar-link">⚙️ Настройки</a>
+                    <a href="#" class="sidebar-link">📚 Документация</a>
+                    <a href="#" class="sidebar-link">🛟 Поддержка</a>
+                </nav>
+            </aside>
+
+            <main class="dashboard-main">
+                <h1>Дашборд</h1>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">1</div>
+                        <div class="stat-label">Активные ключи</div>
+                        <span class="stat-badge">LIVE</span>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">57,530</div>
+                        <div class="stat-label">Всего ключей</div>
+                        <span class="stat-badge">LIVE</span>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">49,785</div>
+                        <div class="stat-label">Использовано ключей</div>
+                        <span class="stat-badge">LIVE</span>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">7,744</div>
+                        <div class="stat-label">Онлайн пользователей</div>
+                        <span class="stat-badge">LIVE</span>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">86.5%</div>
+                        <div class="stat-label">Использование лицензий</div>
+                        <span class="stat-badge">LIVE</span>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">7,744</div>
+                        <div class="stat-label">Доступные лицензии</div>
+                        <span class="stat-badge">LIVE</span>
+                    </div>
+                </div>
+
+                <div class="overview-grid">
+                    <div class="overview-card">
+                        <div class="stat-label">Общие продажи</div>
+                        <div class="overview-value">49,785</div>
+                        <div class="overview-change">↑ 12%</div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="stat-label">Примерный доход</div>
+                        <div class="overview-value">$246,435.75</div>
+                        <div class="overview-change">↑ 8%</div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="stat-label">Конверсия</div>
+                        <div class="overview-value">86.5%</div>
+                        <div class="overview-change">↑ 5%</div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="stat-label">Активные пользователи</div>
+                        <div class="overview-value">49,784</div>
+                        <div class="overview-change">↑ 1%</div>
+                    </div>
+                </div>
+
+                <section class="keys-section">
+                    <div class="section-header">
+                        <h2>Управление ключами</h2>
+                        <button class="btn-generate" onclick="generateKey()">Сгенерировать ключ</button>
+                    </div>
+                    
+                    <table class="keys-table">
+                        <thead>
+                            <tr>
+                                <th>Ключ</th>
+                                <th>Статус</th>
+                                <th>Создан</th>
+                                <th>Истекает</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="keys-table-body">
+                            <!-- Keys will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </section>
+            </main>
+        </div>
+    </section>
+
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
